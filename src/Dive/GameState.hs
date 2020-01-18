@@ -8,20 +8,30 @@ import qualified Data.Map as Map
 type Pos = (Int, Int)
 data Tile = Floor | Wall deriving (Show, Eq)
 
+data MonsterType = Rat
+  deriving (Show, Eq)
+
 fclabels [d|
   data Player = Player
     { position :: Pos
     , health   :: Integer
     } deriving (Show, Eq)
 
+  data Monster = Monster
+    { mPosition :: Pos
+    , mHealth   :: Integer
+    , mType     :: MonsterType
+    } deriving (Show, Eq)
+
   data GameState = GameState
-    { tiles  :: Map Pos Tile
-    , player :: Player
+    { tiles    :: Map Pos Tile
+    , player   :: Player
+    , monsters :: [Monster]
     } deriving (Show, Eq)
   |]
 
 initialGameState :: GameState
-initialGameState = GameState initialMap initialPlayer
+initialGameState = GameState initialMap initialPlayer [initialMonster]
 
 initialMap :: Map Pos Tile
 initialMap = Map.fromList
@@ -31,3 +41,6 @@ initialMap = Map.fromList
 
 initialPlayer :: Player
 initialPlayer = Player (0, 0) 100
+
+initialMonster :: Monster
+initialMonster = Monster (2,3) 10 Rat

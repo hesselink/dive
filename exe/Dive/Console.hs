@@ -24,7 +24,10 @@ ppr gs vty = liftIO $ do
       (tlx, tly) = (px - bx `div` 2, py - by `div` 2)
       (brx, bry) = (px + bx `div` 2, py + by `div` 2)
       ts = [ (p, Map.lookup p (get tiles gs)) | x <- [tlx .. brx], y <- [tly .. bry], let p = (x, y) ]
-      pic = Vty.picForLayers [imagePlayer (tlx, tly) (get player gs), imageTiles ts]
+      pic = Vty.picForLayers
+        [imagePlayer (tlx, tly) (get player gs)
+        , foldMap (imageMonster (tlx, tly)) (get monsters gs)
+        , imageTiles ts]
   Vty.update vty pic
 
 imagePlayer :: Pos -> Player -> Vty.Image
@@ -32,6 +35,15 @@ imagePlayer (tlx, tly) p =
   let (px, py) = get position p
   in Vty.pad (px - tlx) (py - tly) 0 0 $
        Vty.char (Vty.defAttr `Vty.withForeColor` Vty.red) '@'
+
+imageMonster :: Pos -> Monster -> Vty.Image
+imageMonster (tlx, tly) m =
+  let (mx, my) = get mPosition m
+  in Vty.pad (mx - tlx) (my - tly) 0 0 $
+       imageMonsterSymbol (get mType m)
+
+imageMonsterSymbol :: MonsterType -> Vty.Image
+imageMonsterSymbol Rat = Vty.char (Vty.defAttr `Vty.withForeColor` Vty.yellow) 'r'
 
 -- | Invariant: ordered by x position then y position, every position
 -- in the grid is present.

@@ -5,9 +5,10 @@ import Control.Monad.State
 import Graphics.Vty (Vty, mkVty)
 import qualified Graphics.Vty as Vty
 
-import Dive.Actions
-import Dive.GameState
-import Dive.Console
+import Dive.Actions (Command (..), UIAction (..), performAction)
+import Dive.Console (eventToCmd, ppr)
+import Dive.GameState (GameState, initialGameState)
+import Dive.World (worldTick)
 
 main :: IO ()
 main = do
@@ -29,6 +30,8 @@ gameLoop initGs vty = evalStateT gameLoop' initGs
         Just (GameCommand cmd ) ->
           False <$ case performAction cmd gs of
             Left _   -> return () -- TODO: print message
-            Right gs' -> put gs'
+            Right gs' -> do
+              put gs'
+              worldTick
         Nothing -> return False
       unless exit gameLoop'

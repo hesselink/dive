@@ -51,8 +51,12 @@ imageTile (Just Wall ) = Vty.char (Vty.defAttr `Vty.withForeColor` Vty.red) '#'
 
 eventToCmd :: Vty.Event -> Maybe Command
 eventToCmd (Vty.EvKey k mods) = keyToCmd k mods
-eventToCmd (Vty.EvMouse _x _y _b _mods) = Nothing
+eventToCmd (Vty.EvMouseUp _x _y _b) = Nothing
+eventToCmd (Vty.EvMouseDown _x _y _b _mods) = Nothing
 eventToCmd (Vty.EvResize _x _y) = Nothing
+eventToCmd (Vty.EvPaste _bs) = Nothing
+eventToCmd Vty.EvGainedFocus = Nothing
+eventToCmd Vty.EvLostFocus = Nothing
 
 keyToCmd :: Vty.Key -> [Vty.Modifier] -> Maybe Command
 keyToCmd k ms =  UICommand   <$> keyToUICmd   k ms
